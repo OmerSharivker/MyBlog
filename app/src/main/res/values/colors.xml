@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- צבעים מותאמים אישית -->
+    <color name="primary_color">#6200EE</color>
+    <color name="secondary_color">#3700B3</color>
+    <color name="background_color">#FAFAFA</color>
+    <color name="text_color">#000000</color>
+    <color name="error_color">#B00020</color>
+</resources>
