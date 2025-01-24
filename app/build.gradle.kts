@@ -28,6 +28,7 @@ android {
         buildConfigField("String", "CLOUD_NAME", "\"${project.properties["CLOUD_NAME"] ?:""}\"")
         buildConfigField("String", "API_KEY", "\"${project.properties["API_KEY"] ?:""}\"")
         buildConfigField("String", "API_SECRET", "\"${project.properties["API_SECRET"] ?:""}\"")
+        buildConfigField("String", "GEMINI_API_KEY", "\"${project.properties["GOOGLE_API_KEY"] ?:""}\"")
     }
 
     buildTypes {
@@ -68,9 +69,12 @@ dependencies {
     implementation(libs.glide)
     implementation (libs.cloudinary.android)
     implementation(libs.firebase.firestore)
+    implementation(libs.generativeai)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.firebase.auth.ktx)
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -2,15 +2,19 @@ package com.example.myblog.data.repository
 
 import android.content.Context
 import android.net.Uri
+
 import com.example.myblog.data.api.CloudinaryService
 import com.example.myblog.data.api.FirebaseService
+import com.example.myblog.data.api.GeminiService
 import com.example.myblog.data.model.Post
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+
 class PostRepository(
     private val firebaseService: FirebaseService = FirebaseService(),
-    private val cloudinaryService: CloudinaryService = CloudinaryService()
+    private val cloudinaryService: CloudinaryService = CloudinaryService(),
+    private val geminiService: GeminiService = GeminiService()
 ) {
 
     suspend fun uploadPostToFirestore(imageUri: Uri, description: String, context: Context, onResult: (Boolean, String?) -> Unit) {
@@ -48,6 +52,6 @@ class PostRepository(
     }
 
     suspend fun generatePostDescription(): String {
-        return "Generated description for the post." // Mock AI service
+        return geminiService.generateFunnySentence()
     }
 }
