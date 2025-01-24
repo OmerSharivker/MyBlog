@@ -1,51 +1,53 @@
 package com.example.myblog.data.repository
 
+import android.content.Context
+import android.net.Uri
+import com.example.myblog.data.api.CloudinaryService
+import com.example.myblog.data.api.FirebaseService
 import com.example.myblog.data.model.Post
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class PostRepository {
+class PostRepository(
+    private val firebaseService: FirebaseService = FirebaseService(),
+    private val cloudinaryService: CloudinaryService = CloudinaryService()
+) {
 
-    private val firestore = FirebaseFirestore.getInstance()
+    suspend fun uploadPostToFirestore(imageUri: Uri, description: String, context: Context, onResult: (Boolean, String?) -> Unit) {
+        withContext(Dispatchers.IO) {
 
+            cloudinaryService.uploadImage(imageUri, context) { success, imageUrl ->
+                if (success && imageUrl != null) {
+                    val post = Post(
+                        id = firebaseService.generatePostId(),
+                        userId = firebaseService.getCurrentUserId() ?: "Unknown User",
+                        userName = "Current User Name",
+                        userProfileImageUrl = "Current User Profile URL",
+                        postImageUrl = imageUrl,
+                        description = description
+                    )
 
-    private val postsCollection = firestore.collection("posts")
-
-
-    suspend fun addPost(post: Post): Result<Boolean> {
-        return try {
-            postsCollection.document(post.id).set(post).await()
-            Result.success(true)
-        } catch (e: Exception) {
-            Result.failure(e)
+                    firebaseService.savePostToFirestore(post) { success, error ->
+                        if (success) {
+                            onResult(true, null)
+                        } else {
+                            onResult(false, error)
+                        }
+                    }
+                } else {
+                    onResult(false, "Failed to upload image to Cloudinary")
+                }
+            }
         }
     }
 
-    // Fetch all posts from Firestore
-    suspend fun fetchPosts(): Result<List<Post>> {
-        return try {
-            val snapshot = postsCollection.get().await()
-            val posts = snapshot.toObjects(Post::class.java)
-            Result.success(posts)
-        } catch (e: Exception) {
-            Result.failure(e)
+    suspend fun fetchPosts(onResult: (List<Post>) -> Unit) {
+        firebaseService.getPosts { posts ->
+            onResult(posts)
         }
     }
 
-    // Use AI to generate a description for the post
-    suspend fun generateDescription(imageUrl: String): Result<String> {
-        return try {
-            // Call the Gemini (or OpenAI) API to generate the description
-            val description = callGeminiAPI(imageUrl)
-            Result.success(description)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    // Simulating the Gemini API call (replace this with real implementation)
-    private suspend fun callGeminiAPI(imageUrl: String): String {
-        // Simulate API logic (use Retrofit/HTTP for real implementation)
-        return "Generated description for image: $imageUrl"
+    suspend fun generatePostDescription(): String {
+        return "Generated description for the post." // Mock AI service
     }
 }

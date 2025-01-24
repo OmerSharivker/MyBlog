@@ -1,3 +1,5 @@
+
+
 import org.jetbrains.kotlin.storage.CacheResetOnProcessCanceled.enabled
 
 plugins {
@@ -10,8 +12,11 @@ plugins {
 android {
     namespace = "com.example.myblog"
     compileSdk = 35
+    buildFeatures {
+        buildConfig = true
+    }
 
-    defaultConfig {
+        defaultConfig {
         applicationId = "com.example.myblog"
         minSdk = 29
         targetSdk = 35
@@ -19,6 +24,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "CLOUD_NAME", "\"${project.properties["CLOUD_NAME"] ?:""}\"")
+        buildConfigField("String", "API_KEY", "\"${project.properties["API_KEY"] ?:""}\"")
+        buildConfigField("String", "API_SECRET", "\"${project.properties["API_SECRET"] ?:""}\"")
     }
 
     buildTypes {
@@ -57,8 +66,10 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.glide)
-
+    implementation (libs.cloudinary.android)
     implementation(libs.firebase.firestore)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.firebase.auth.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

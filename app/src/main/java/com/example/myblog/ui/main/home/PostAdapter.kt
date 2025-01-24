@@ -28,7 +28,7 @@ class PostAdapter : ListAdapter<Post, PostAdapter.PostViewHolder>(PostDiffCallba
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        val post = getItem(position) // שימוש ב-getItem עבור ListAdapter
+        val post = getItem(position)
         holder.userName.text = post.userName
         holder.postDescription.text = post.description
         Glide.with(holder.itemView.context).load(post.userProfileImageUrl).into(holder.profileImage)
