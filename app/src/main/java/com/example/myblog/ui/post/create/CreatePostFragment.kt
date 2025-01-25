@@ -9,16 +9,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.example.myblog.R
 import com.example.myblog.databinding.FragmentCreatePostBinding
-import kotlinx.coroutines.Dispatchers
+import com.example.myblog.ui.base.BaseFragment
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-class CreatePostFragment : Fragment() {
+class CreatePostFragment : BaseFragment() {
 
     private var _binding: FragmentCreatePostBinding? = null
     private val binding get() = _binding!!
@@ -43,18 +43,15 @@ class CreatePostFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         binding.selectImageButton.setOnClickListener {
             imagePickerLauncher.launch("image/*")
         }
-
 
         binding.aiGenerateButton.setOnClickListener {
             createPostViewModel.generateDescription { generatedText ->
                 binding.descriptionEditText.setText(generatedText)
             }
         }
-
 
         binding.uploadPostButton.setOnClickListener {
             val description = binding.descriptionEditText.text.toString()
@@ -64,16 +61,20 @@ class CreatePostFragment : Fragment() {
                 return@setOnClickListener
             }
 
+            // הצגת ה-loader בזמן העלאת הפוסט
+            showLoader(binding.loader, "Uploading post...")
 
             lifecycleScope.launch {
                 createPostViewModel.uploadPost(selectedImageUri!!, description, requireContext()) { success, message ->
+                    hideLoader(binding.loader) // הסתרת ה-loader לאחר שהמשימה מסתיימת
 
-                        if (success) {
-                            Log.d("CreatePostFragment", "Post uploaded successfully")
-                        } else {
-                         Log.d("CreatePostFragment", "Failed to upload post: $message")
-                        }
-
+                    if (success) {
+                        showToast(requireContext(), "Post uploaded successfully")
+                        findNavController().navigate(R.id.action_createPostFragment_to_homeFragment)
+                    } else {
+                        showToast(requireContext(), "Failed to upload post: $message")
+                        Log.d("CreatePostFragment", "Failed to upload post: $message")
+                    }
                 }
             }
         }

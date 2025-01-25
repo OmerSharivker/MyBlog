@@ -5,19 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.myblog.R
 import com.example.myblog.databinding.FragmentLoginBinding
+import com.example.myblog.ui.base.BaseFragment
 
-class LoginFragment : Fragment() {
+class LoginFragment : BaseFragment() {
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
-
     private val loginViewModel: LoginViewModel by viewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,19 +30,23 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // כפתור כניסה
+
         binding.loginButton.setOnClickListener {
             val email = binding.emailEditText.text.toString()
             val password = binding.passwordEditText.text.toString()
 
             if (email.isNotEmpty() && password.isNotEmpty()) {
-                // קריאה לפונקציה ב-ViewModel
+
+                showLoader(binding.loader, "Logging in...")
+
+
                 loginViewModel.loginUser(email, password) { success, message ->
+                    hideLoader(binding.loader)
                     if (success) {
-                        Toast.makeText(requireContext(), "Login successful", Toast.LENGTH_SHORT).show()
                         findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
                     } else {
-                        Toast.makeText(requireContext(), "Error: $message", Toast.LENGTH_SHORT).show()
+                        hideLoader(binding.loader)
+                        Toast.makeText(requireContext(), message ?: "Login failed", Toast.LENGTH_SHORT).show()
                     }
                 }
             } else {
@@ -50,7 +54,7 @@ class LoginFragment : Fragment() {
             }
         }
 
-        // מעבר למסך הרשמה
+
         binding.registerLink.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
         }

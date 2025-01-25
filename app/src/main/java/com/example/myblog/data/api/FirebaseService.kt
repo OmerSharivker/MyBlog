@@ -71,7 +71,17 @@ class FirebaseService {
     fun getCurrentUserId(): String? {
         return auth.currentUser?.uid
     }
-
+    fun getUserById(userId: String, onResult: (User?) -> Unit) {
+        firestore.collection("users").document(userId)
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                val user = documentSnapshot.toObject(User::class.java)
+                onResult(user)
+            }
+            .addOnFailureListener {
+                onResult(null)
+            }
+    }
     fun getPosts(onResult: (List<Post>) -> Unit) {
         firestore.collection("posts")
             .get()
@@ -83,4 +93,24 @@ class FirebaseService {
                 onResult(emptyList())
             }
     }
+    fun getPostById(postId: String, onResult: (Post?) -> Unit) {
+        firestore.collection("posts").document(postId).get()
+            .addOnSuccessListener { document ->
+                val post = document.toObject(Post::class.java)
+                onResult(post)
+            }
+            .addOnFailureListener {
+                onResult(null)
+            }
+    }
+
+    fun updatePostLikes(postId: String, likes: List<String>, onResult: (Boolean, String?) -> Unit) {
+        firestore.collection("posts").document(postId)
+            .update("likes", likes)
+            .addOnSuccessListener { onResult(true, null) }
+            .addOnFailureListener { e -> onResult(false, e.message) }
+    }
+
+
+
 }

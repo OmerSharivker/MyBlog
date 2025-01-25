@@ -19,23 +19,26 @@ class PostRepository(
 
     suspend fun uploadPostToFirestore(imageUri: Uri, description: String, context: Context, onResult: (Boolean, String?) -> Unit) {
         withContext(Dispatchers.IO) {
-
             cloudinaryService.uploadImage(imageUri, context) { success, imageUrl ->
                 if (success && imageUrl != null) {
-                    val post = Post(
-                        id = firebaseService.generatePostId(),
-                        userId = firebaseService.getCurrentUserId() ?: "Unknown User",
-                        userName = "Current User Name",
-                        userProfileImageUrl = "Current User Profile URL",
-                        postImageUrl = imageUrl,
-                        description = description
-                    )
+                    val currentUserId = firebaseService.getCurrentUserId() ?: "Unknown User"
 
-                    firebaseService.savePostToFirestore(post) { success, error ->
-                        if (success) {
-                            onResult(true, null)
-                        } else {
-                            onResult(false, error)
+                    firebaseService.getUserById(currentUserId) { user ->
+                        val post = Post(
+                            id = firebaseService.generatePostId(),
+                            userId = currentUserId,
+                            userName = user?.name ?: "Current User",
+                            userProfileImageUrl = user?.profileImageUrl ?: "android.resource://com.example.myblog/drawable/ic_profile_placeholder",
+                            postImageUrl = imageUrl,
+                            description = description
+                        )
+
+                        firebaseService.savePostToFirestore(post) { success, error ->
+                            if (success) {
+                                onResult(true, null)
+                            } else {
+                                onResult(false, error)
+                            }
                         }
                     }
                 } else {
@@ -54,4 +57,6 @@ class PostRepository(
     suspend fun generatePostDescription(): String {
         return geminiService.generateFunnySentence()
     }
+
+
 }
