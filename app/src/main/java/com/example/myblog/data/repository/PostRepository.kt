@@ -2,6 +2,7 @@ package com.example.myblog.data.repository
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 
 import com.example.myblog.data.api.CloudinaryService
 import com.example.myblog.data.api.FirebaseService
@@ -57,6 +58,34 @@ class PostRepository(
     suspend fun generatePostDescription(): String {
         return geminiService.generateFunnySentence()
     }
+    suspend fun toggleLike(postId: String, liked: Boolean, onResult: (Boolean, String?) -> Unit) {
+        val currentUserId = firebaseService.getCurrentUserId()
+        if (currentUserId != null) {
+            firebaseService.getPostById(postId) { post ->
+                if (post != null) {
+                    val mutableLikes = post.likes.toMutableList()
 
+                    if (liked) {
+                        Log.d("PostRepository", "Adding like to post")
+                        if (!mutableLikes.contains(currentUserId)) {
+                            Log.d("PostRepository", "User ID: $currentUserId")
+                            mutableLikes.add(currentUserId)
+                        }
+                    } else {
+                        Log.d("PostRepository", "Removing like from post")
+                        mutableLikes.remove(currentUserId)
+                    }
+
+                    firebaseService.updatePostLikes(postId, mutableLikes) { success, error ->
+                        onResult(success, error)
+                    }
+                } else {
+                    onResult(false, "Post not found")
+                }
+            }
+        } else {
+            onResult(false, "User not logged in")
+        }
+    }
 
 }

@@ -34,11 +34,27 @@ class MainActivity : AppCompatActivity() {
         // Optional: Add manual handling for specific menu items
         bottomNavView.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
+                R.id.homeFragment -> {
+                    // בדוק אם אתה כבר בעמוד הבית, אם לא, נווט לשם
+                    if (navController.currentDestination?.id != R.id.homeFragment) {
+                        navController.navigate(R.id.homeFragment)
+                    }
+                    true
+                }
                 R.id.addPost -> {
+                    // נווט לעמוד יצירת פוסט
                     navController.navigate(R.id.createPostFragment)
                     true
                 }
+                R.id.profileFragment -> {
+                    // נווט לעמוד פרופיל
+                    if (navController.currentDestination?.id != R.id.profileFragment) {
+                        navController.navigate(R.id.profileFragment)
+                    }
+                    true
+                }
                 else -> {
+                    // טיפול ברירת מחדל
                     NavigationUI.onNavDestinationSelected(menuItem, navController)
                     true
                 }

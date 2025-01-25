@@ -74,7 +74,8 @@
                     android:id="@+id/likeIcon"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_like" />
+                    android:src="@drawable/like_icon_selector"
+                    android:checkable="true" />
 
                 <TextView
                     android:id="@+id/likeCount"

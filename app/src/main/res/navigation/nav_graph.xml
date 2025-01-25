@@ -62,5 +62,17 @@
     <action
         android:id="@+id/action_createPostFragment_to_homeFragment"
         app:destination="@id/homeFragment" />
+
+    <!-- Profile Fragment -->
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.myblog.ui.profile.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile" />
+
+    <!-- Action back to Home Fragment -->
+    <action
+        android:id="@+id/action_profileFragment_to_homeFragment"
+        app:destination="@id/homeFragment" />
 </navigation>
 
