@@ -34,10 +34,10 @@
         android:id="@+id/descriptionInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         app:layout_constraintTop_toBottomOf="@id/selectImageButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintMarginTop="16dp">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/descriptionEditText"
@@ -65,7 +65,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:backgroundTint="@color/primary"
+        android:backgroundTint="@color/primary_color"
         android:text="Upload Post"
         app:layout_constraintTop_toBottomOf="@id/aiGenerateButton"
         app:layout_constraintStart_toStartOf="parent"

@@ -11,6 +11,28 @@ class FirebaseService {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
+
+
+    fun generatePostId(): String {
+        return firestore.collection("posts").document().id
+    }
+
+
+    fun savePostToFirestore(post: Post, onResult: (Boolean, String?) -> Unit) {
+        Log.d("FirebaseService", "Saving post to Firestore: ${post.id}")
+        firestore.collection("posts").document(post.id)
+            .set(post)
+            .addOnSuccessListener {
+                Log.d("FirebaseService", "Post saved successfully")
+                onResult(true, null)
+            }
+            .addOnFailureListener { e ->
+                Log.e("FirebaseService", "Failed to save post: ${e.message}")
+                onResult(false, e.message)
+            }
+    }
+
+
     fun loginUser(email: String, password: String, onResult: (Boolean, String?) -> Unit) {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->

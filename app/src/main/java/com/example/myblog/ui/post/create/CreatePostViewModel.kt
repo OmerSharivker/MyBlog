@@ -1,6 +1,6 @@
 package com.example.myblog.ui.post.create
 
-
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,14 +11,13 @@ class CreatePostViewModel : ViewModel() {
 
     private val repository = PostRepository()
 
-    fun uploadPost(imageUri: Uri, description: String, onResult: (Boolean, String?) -> Unit) {
+    fun uploadPost(imageUri: Uri, description: String, context: Context, onResult: (Boolean, String?) -> Unit) {
         viewModelScope.launch {
-            repository.uploadPostToFirestore(imageUri, description, onResult)
+            repository.uploadPostToFirestore(imageUri, description, context, onResult)
         }
     }
 
     fun generateDescription(onResult: (String) -> Unit) {
-        // קריאה לשירות AI
         viewModelScope.launch {
             val generatedText = repository.generatePostDescription()
             onResult(generatedText)

@@ -17,8 +17,9 @@ class HomeViewModel : ViewModel() {
 
     fun loadPosts() {
         viewModelScope.launch {
-            val postList = postRepository.getPosts()
-            _posts.value = postList
+            postRepository.fetchPosts { postList ->
+                _posts.value = postList
+            }
         }
     }
 }

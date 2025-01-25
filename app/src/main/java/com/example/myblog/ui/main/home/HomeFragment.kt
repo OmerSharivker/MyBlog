@@ -31,12 +31,10 @@ class HomeFragment : Fragment() {
 
         setupRecyclerView()
 
-        // לצפות ברשימת הפוסטים ולתת אותה לאדפטור
+
         homeViewModel.posts.observe(viewLifecycleOwner) { posts ->
             postAdapter.submitList(posts)
         }
-
-        // טעינת הפוסטים מהשרת
         homeViewModel.loadPosts()
     }
 
