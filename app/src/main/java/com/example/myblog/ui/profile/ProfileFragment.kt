@@ -1,4 +1,4 @@
-package com.example.myblog.ui.home
+package com.example.myblog.ui.profile
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,22 +7,23 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.myblog.databinding.FragmentHomeBinding
+import com.bumptech.glide.Glide
+import com.example.myblog.databinding.FragmentProfileBinding
 import com.example.myblog.ui.main.home.PostAdapter
 
-class HomeFragment : Fragment() {
+class ProfileFragment : Fragment() {
 
-    private var _binding: FragmentHomeBinding? = null
+    private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
-    private val homeViewModel: HomeViewModel by viewModels()
+    private val profileViewModel: ProfileViewModel by viewModels()
     private lateinit var postAdapter: PostAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        _binding = FragmentProfileBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -31,18 +32,23 @@ class HomeFragment : Fragment() {
 
         setupRecyclerView()
 
+        profileViewModel.user.observe(viewLifecycleOwner) { user ->
+            user?.let {
+                binding.profileName.text = it.name
+                Glide.with(this).load(it.profileImageUrl).into(binding.profileImage)
+            }
+        }
 
-        homeViewModel.posts.observe(viewLifecycleOwner) { posts ->
+        profileViewModel.userPosts.observe(viewLifecycleOwner) { posts ->
             postAdapter.submitList(posts)
         }
 
-
-        homeViewModel.loadPosts()
+        profileViewModel.loadProfile()
     }
 
     private fun setupRecyclerView() {
         postAdapter = PostAdapter { postId, liked ->
-            homeViewModel.toggleLike(postId, liked)
+            // Placeholder for toggleLike
         }
         binding.postsRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())

@@ -1,5 +1,4 @@
 package com.example.myblog.data.model
-
 data class Post(
     val id: String = "",
     val userId: String = "",
@@ -7,6 +6,6 @@ data class Post(
     val userProfileImageUrl: String = "",
     val postImageUrl: String = "",
     val description: String = "",
-    val likes: Int = 0,
+    val likes: List<Any> = emptyList(),
     val comments: Int = 0
 )

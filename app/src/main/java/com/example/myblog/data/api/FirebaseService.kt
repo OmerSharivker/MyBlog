@@ -104,7 +104,7 @@ class FirebaseService {
             }
     }
 
-    fun updatePostLikes(postId: String, likes: List<String>, onResult: (Boolean, String?) -> Unit) {
+    fun updatePostLikes(postId: String, likes: List<Any>, onResult: (Boolean, String?) -> Unit) {
         firestore.collection("posts").document(postId)
             .update("likes", likes)
             .addOnSuccessListener { onResult(true, null) }
