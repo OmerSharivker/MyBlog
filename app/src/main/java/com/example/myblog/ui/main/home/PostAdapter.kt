@@ -19,6 +19,8 @@ class PostAdapter : ListAdapter<Post, PostAdapter.PostViewHolder>(PostDiffCallba
         val userName: TextView = itemView.findViewById(R.id.userNameTextView)
         val postImage: ImageView = itemView.findViewById(R.id.postImageView)
         val postDescription: TextView = itemView.findViewById(R.id.postDescriptionTextView)
+        val likeCount: TextView = itemView.findViewById(R.id.likeCount)
+        val commentCount: TextView = itemView.findViewById(R.id.commentCount)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
@@ -31,6 +33,9 @@ class PostAdapter : ListAdapter<Post, PostAdapter.PostViewHolder>(PostDiffCallba
         val post = getItem(position)
         holder.userName.text = post.userName
         holder.postDescription.text = post.description
+        holder.likeCount.text = post.likes.toString()
+        holder.commentCount.text = post.comments.toString()
+
         Glide.with(holder.itemView.context).load(post.userProfileImageUrl).into(holder.profileImage)
         Glide.with(holder.itemView.context).load(post.postImageUrl).into(holder.postImage)
     }
@@ -44,4 +49,6 @@ class PostAdapter : ListAdapter<Post, PostAdapter.PostViewHolder>(PostDiffCallba
             return oldItem == newItem
         }
     }
+
+
 }

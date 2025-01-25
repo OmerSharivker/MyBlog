@@ -35,6 +35,8 @@ class HomeFragment : Fragment() {
         homeViewModel.posts.observe(viewLifecycleOwner) { posts ->
             postAdapter.submitList(posts)
         }
+
+
         homeViewModel.loadPosts()
     }
 

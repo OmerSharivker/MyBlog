@@ -6,5 +6,7 @@ data class Post(
     val userName: String = "",
     val userProfileImageUrl: String = "",
     val postImageUrl: String = "",
-    val description: String = ""
+    val description: String = "",
+    val likes: Int = 0,
+    val comments: Int = 0
 )

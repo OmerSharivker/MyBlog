@@ -29,6 +29,11 @@
         android:label="Register"
         tools:layout="@layout/fragment_register">
 
+        <!-- Action to Home Fragment -->
+        <action
+            android:id="@+id/action_registerFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+
         <!-- Action to Login Fragment -->
         <action
             android:id="@+id/action_registerFragment_to_loginFragment"
@@ -54,5 +59,8 @@
         android:name="com.example.myblog.ui.post.create.CreatePostFragment"
         android:label="Create Post"
         tools:layout="@layout/fragment_create_post" />
+    <action
+        android:id="@+id/action_createPostFragment_to_homeFragment"
+        app:destination="@id/homeFragment" />
 </navigation>
 
