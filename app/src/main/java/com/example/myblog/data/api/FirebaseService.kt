@@ -111,6 +111,23 @@ class FirebaseService {
             .addOnFailureListener { e -> onResult(false, e.message) }
     }
 
+    fun listenToPosts(userId: String, onResult: (List<Post>) -> Unit) {
+        firestore.collection("posts")
+            .whereEqualTo("userId", userId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.e("FirebaseService", "Error listening to posts: ${error.message}")
+                    onResult(emptyList())
+                    return@addSnapshotListener
+                }
 
+                if (snapshot != null && !snapshot.isEmpty) {
+                    val posts = snapshot.toObjects(Post::class.java)
+                    onResult(posts)
+                } else {
+                    onResult(emptyList())
+                }
+            }
+    }
 
 }
