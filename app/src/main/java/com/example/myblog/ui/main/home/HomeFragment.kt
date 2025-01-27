@@ -6,8 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.myblog.R
 import com.example.myblog.databinding.FragmentHomeBinding
+
+
 import com.example.myblog.ui.main.home.PostAdapter
 
 class HomeFragment : Fragment() {
@@ -41,15 +45,24 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        postAdapter = PostAdapter { postId, liked ->
-            homeViewModel.toggleLike(postId, liked)
-        }
+        postAdapter = PostAdapter(
+            toggleLike = { postId, liked ->
+                homeViewModel.toggleLike(postId, liked)
+            },
+            onEditPostClicked = { post ->
+
+                val bundle = Bundle().apply {
+                    putParcelable("post", post)
+                }
+
+                findNavController().navigate(R.id.action_homeFragment_to_createPostFragment, bundle)
+            }
+        )
         binding.postsRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = postAdapter
         }
     }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

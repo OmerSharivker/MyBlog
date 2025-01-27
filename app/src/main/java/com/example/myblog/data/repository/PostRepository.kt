@@ -87,5 +87,22 @@ class PostRepository(
             onResult(false, "User not logged in")
         }
     }
+    suspend fun updatePostWithImage(postId: String, imageUri: Uri, description: String, context: Context, onResult: (Boolean, String?) -> Unit) {
+        cloudinaryService.uploadImage(imageUri, context) { success, imageUrl ->
+            if (success && imageUrl != null) {
+                firebaseService.updatePost(postId, imageUrl, description) { result, error ->
+                    onResult(result, error)
+                }
+            } else {
+                onResult(false, "Failed to upload image")
+            }
+        }
+    }
+
+    suspend fun updatePostDescription(postId: String, description: String, onResult: (Boolean, String?) -> Unit) {
+        firebaseService.updatePostDescription(postId, description) { success, error ->
+            onResult(success, error)
+        }
+    }
 
 }

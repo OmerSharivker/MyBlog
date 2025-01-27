@@ -129,5 +129,22 @@ class FirebaseService {
                 }
             }
     }
+    fun updatePost(postId: String, imageUrl: String, description: String, onResult: (Boolean, String?) -> Unit) {
+        val postUpdates = mapOf(
+            "postImageUrl" to imageUrl,
+            "description" to description
+        )
+        firestore.collection("posts").document(postId)
+            .update(postUpdates)
+            .addOnSuccessListener { onResult(true, null) }
+            .addOnFailureListener { e -> onResult(false, e.message) }
+    }
+
+    fun updatePostDescription(postId: String, description: String, onResult: (Boolean, String?) -> Unit) {
+        firestore.collection("posts").document(postId)
+            .update("description", description)
+            .addOnSuccessListener { onResult(true, null) }
+            .addOnFailureListener { e -> onResult(false, e.message) }
+    }
 
 }

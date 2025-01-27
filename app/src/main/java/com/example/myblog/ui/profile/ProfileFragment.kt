@@ -13,18 +13,21 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.example.myblog.R
 import com.example.myblog.databinding.DialogEditProfileBinding
 import com.example.myblog.databinding.FragmentProfileBinding
 import com.example.myblog.ui.base.BaseFragment
+import com.example.myblog.ui.home.HomeViewModel
 import com.example.myblog.ui.main.home.PostAdapter
 
 class ProfileFragment : BaseFragment() {
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
-
+    private val homeViewModel: HomeViewModel by viewModels()
     private val profileViewModel: ProfileViewModel by viewModels()
     private lateinit var postAdapter: PostAdapter
     private var selectedImageUri: Uri? = null
@@ -95,10 +98,20 @@ class ProfileFragment : BaseFragment() {
         }
     }
 
+
+
     private fun setupRecyclerView() {
-        postAdapter = PostAdapter { postId, liked ->
-            // Placeholder for toggleLike
-        }
+        postAdapter = PostAdapter(
+            toggleLike = { postId, liked ->
+                profileViewModel.toggleLike(postId, liked)
+            },
+            onEditPostClicked = { post ->
+                val bundle = Bundle().apply {
+                    putParcelable("post", post)
+                }
+                findNavController().navigate(R.id.action_profileFragment_to_createPostFragment, bundle)
+            }
+        )
         binding.postsRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = postAdapter

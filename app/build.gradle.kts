@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.services)
-
+    id("kotlin-parcelize")
 }
 
 android {
@@ -69,12 +69,14 @@ dependencies {
     implementation(libs.glide)
     implementation (libs.cloudinary.android)
     implementation(libs.firebase.firestore)
+
     implementation(libs.generativeai)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.firebase.auth.ktx)
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

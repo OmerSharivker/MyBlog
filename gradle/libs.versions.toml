@@ -19,7 +19,7 @@ activity = "1.9.3"
 constraintlayout = "2.1.4"
 googleServices = "4.4.2"
 firebaseAuthKtx = "23.1.0"
-navigationFragmentKtx = "2.7.3"
+navigationFragmentKtx = "2.8.5"
 retrofit = "2.9.0"
 
 
