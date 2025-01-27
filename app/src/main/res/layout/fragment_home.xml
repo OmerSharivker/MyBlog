@@ -29,16 +29,8 @@
         app:layout_constraintTop_toBottomOf="@id/logoImageView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavBar" />
+         />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:menu="@menu/bottom_nav_menu"
-        app:itemIconTint="@color/secondary_text_color"
-        app:itemTextColor="@color/secondary_text_color"
-        android:layout_gravity="bottom"
-        app:layout_constraintBottom_toBottomOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

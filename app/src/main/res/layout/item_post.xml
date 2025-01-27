@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -31,6 +30,19 @@
             android:textStyle="bold"
             android:textSize="16sp"
             app:layout_constraintStart_toEndOf="@id/profileImageView"
+            app:layout_constraintTop_toTopOf="@id/profileImageView"
+            app:layout_constraintBottom_toBottomOf="@id/profileImageView"
+            app:layout_constraintEnd_toStartOf="@id/menuButton" />
+
+        <!-- אייקון שלוש נקודות -->
+        <ImageButton
+            android:id="@+id/menuButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_more_vert"
+            android:contentDescription="@string/menu"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/profileImageView"
             app:layout_constraintBottom_toBottomOf="@id/profileImageView" />
 
@@ -86,27 +98,7 @@
                     android:textSize="14sp" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical|end"
-                android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/commentCount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="0"
-                    android:textSize="14sp" />
-
-                <ImageView
-                    android:id="@+id/commentIcon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_comment" />
-            </LinearLayout>
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

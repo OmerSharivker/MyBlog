@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.myblog.R
+import com.example.myblog.data.model.Post
 import com.example.myblog.databinding.FragmentCreatePostBinding
 import com.example.myblog.ui.base.BaseFragment
 import kotlinx.coroutines.launch
@@ -43,6 +44,20 @@ class CreatePostFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val post: Post? = arguments?.getParcelable("post")
+
+        // שינוי כותרת וכפתור בהתאם למצב (עדכון או יצירת פוסט חדש)
+        if (post != null) {
+            binding.toolbar.title = "Update Post"
+            binding.uploadPostButton.text = "Update Post"
+            Glide.with(this).load(post.postImageUrl).into(binding.imagePreview)
+            binding.descriptionEditText.setText(post.description)
+            selectedImageUri = null // כדי לבדוק אם שונו הנתונים
+        } else {
+            binding.toolbar.title  = "Create Post"
+            binding.uploadPostButton.text = "Upload Post"
+        }
+
         binding.selectImageButton.setOnClickListener {
             imagePickerLauncher.launch("image/*")
         }
@@ -54,30 +69,67 @@ class CreatePostFragment : BaseFragment() {
         }
 
         binding.uploadPostButton.setOnClickListener {
-            val description = binding.descriptionEditText.text.toString()
+            handleUploadOrUpdate(post)
+        }
+    }
 
-            if (selectedImageUri == null || description.isEmpty()) {
-                showToast(requireContext(), "Please select an image and write a description")
-                return@setOnClickListener
-            }
+    private fun handleUploadOrUpdate(post: Post?) {
+        val description = binding.descriptionEditText.text.toString()
 
-            // הצגת ה-loader בזמן העלאת הפוסט
-            showLoader(binding.loader, "Uploading post...")
-            Log.d("CreatePostFragment", " imageUri: $selectedImageUri, description: $description")
+        if (description.isEmpty()) {
+            showToast(requireContext(), "Please write a description")
+            return
+        }
 
-            lifecycleScope.launch {
-                createPostViewModel.uploadPost(selectedImageUri!!, description, requireContext()) { success, message ->
-                    hideLoader(binding.loader) // הסתרת ה-loader לאחר שהמשימה מסתיימת
+        showLoader(binding.loader, if (post != null) "Updating post..." else "Uploading post...")
 
-                    if (success) {
-                        showToast(requireContext(), "Post uploaded successfully")
-                        findNavController().navigate(R.id.action_createPostFragment_to_homeFragment)
-                    } else {
-                        showToast(requireContext(), "Failed to upload post: $message")
-                        Log.d("CreatePostFragment", "Failed to upload post: $message")
+        lifecycleScope.launch {
+            if (post != null) {
+                // אם זו עריכה, נבדוק אם המשתמש שינה את התמונה
+                if (selectedImageUri != null) {
+                    // עדכון תמונה ותיאור
+                    createPostViewModel.updatePostWithImage(
+                        postId = post.id,
+                        imageUri = selectedImageUri!!,
+                        description = description,
+                        context = requireContext()
+                    ) { success, message ->
+                        handleResult(success, message)
+                    }
+                } else {
+                    // עדכון רק תיאור
+                    createPostViewModel.updatePostDescription(
+                        postId = post.id,
+                        description = description
+                    ) { success, message ->
+                        handleResult(success, message)
                     }
                 }
+            } else {
+                // יצירת פוסט חדש
+                if (selectedImageUri == null) {
+                    showToast(requireContext(), "Please select an image")
+                    return@launch
+                }
+
+                createPostViewModel.uploadPost(
+                    selectedImageUri!!,
+                    description,
+                    requireContext()
+                ) { success, message ->
+                    handleResult(success, message)
+                }
             }
+        }
+    }
+
+    private fun handleResult(success: Boolean, message: String?) {
+        hideLoader(binding.loader)
+        if (success) {
+            showToast(requireContext(), "Post saved successfully")
+            findNavController().navigate(R.id.action_createPostFragment_to_homeFragment)
+        } else {
+            showToast(requireContext(), "Error: $message")
         }
     }
 
@@ -86,7 +138,6 @@ class CreatePostFragment : BaseFragment() {
         _binding = null
     }
 
-    // פונקציה להצגת Toast
     private fun showToast(context: Context, message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }

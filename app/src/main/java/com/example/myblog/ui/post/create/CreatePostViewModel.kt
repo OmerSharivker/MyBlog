@@ -23,4 +23,15 @@ class CreatePostViewModel : ViewModel() {
             onResult(generatedText)
         }
     }
+    fun updatePostWithImage(postId: String, imageUri: Uri, description: String, context: Context, onResult: (Boolean, String?) -> Unit) {
+        viewModelScope.launch {
+            repository.updatePostWithImage(postId, imageUri, description, context, onResult)
+        }
+    }
+
+    fun updatePostDescription(postId: String, description: String, onResult: (Boolean, String?) -> Unit) {
+        viewModelScope.launch {
+            repository.updatePostDescription(postId, description, onResult)
+        }
+    }
 }

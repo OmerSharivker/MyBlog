@@ -1,4 +1,9 @@
 package com.example.myblog.data.model
+
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Post(
     val id: String = "",
     val userId: String = "",
@@ -6,6 +11,6 @@ data class Post(
     val userProfileImageUrl: String = "",
     val postImageUrl: String = "",
     val description: String = "",
-    val likes: List<Any> = emptyList(),
+    val likes: List<String> = emptyList(),
     val comments: Int = 0
-)
+) : Parcelable
