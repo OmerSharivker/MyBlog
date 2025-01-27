@@ -10,7 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
+
 
 class CloudinaryService {
 
@@ -44,7 +44,7 @@ class CloudinaryService {
                 return
             }
 
-            // העלאה ל-Cloudinary ב-Dispatchers.IO
+
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     Log.d("CloudinaryService", "Starting upload to Cloudinary")
@@ -72,6 +72,36 @@ class CloudinaryService {
         } catch (e: Exception) {
             e.printStackTrace()
             Log.e("CloudinaryService", "Exception during upload: ${e.message}")
+            onResult(false, e.message)
+        }
+    }
+    fun deleteImage(imageUrl: String, onResult: (Boolean, String?) -> Unit) {
+        try {
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+
+                    val publicId = imageUrl.substringAfterLast("/").substringBeforeLast(".")
+                    val result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap())
+
+                    val success = result["result"] == "ok" || result["result"] == "not_found"
+                    withContext(Dispatchers.Main) {
+                        if (success) {
+                            Log.d("CloudinaryService", "Image deleted successfully: $publicId")
+                            onResult(true, null)
+                        } else {
+                            Log.e("CloudinaryService", "Failed to delete image: $result")
+                            onResult(false, "Failed to delete image")
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e("CloudinaryService", "Error deleting image: ${e.message}")
+                    withContext(Dispatchers.Main) {
+                        onResult(false, e.message)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
             onResult(false, e.message)
         }
     }

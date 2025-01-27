@@ -18,7 +18,8 @@ import com.google.firebase.auth.FirebaseAuth
 
 class PostAdapter(
     private val toggleLike: (String, Boolean) -> Unit,
-    private val onEditPostClicked: (Post) -> Unit // פונקציה לעריכת פוסט
+    private val onEditPostClicked: (Post) -> Unit ,
+    private val onDeletePostClicked: (String) -> Unit
 ) : ListAdapter<Post, PostAdapter.PostViewHolder>(PostDiffCallback()) {
 
     inner class PostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -86,10 +87,31 @@ class PostAdapter(
     private fun showPopupMenu(view: View, post: Post) {
         val popupMenu = PopupMenu(view.context, view)
         popupMenu.inflate(R.menu.post_menu)
+
+        try {
+            val fields = popupMenu.javaClass.declaredFields
+            for (field in fields) {
+                if ("mPopup" == field.name) {
+                    field.isAccessible = true
+                    val menuPopupHelper = field.get(popupMenu)
+                    val classPopupHelper = Class.forName(menuPopupHelper.javaClass.name)
+                    val setForceIcons = classPopupHelper.getMethod("setForceShowIcon", Boolean::class.java)
+                    setForceIcons.invoke(menuPopupHelper, true)
+                    break
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
         popupMenu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.edit_post -> {
                     onEditPostClicked(post)
+                    true
+                }
+                R.id.delete_post -> {
+                    onDeletePostClicked(post.id)
                     true
                 }
                 else -> false

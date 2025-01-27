@@ -146,5 +146,13 @@ class FirebaseService {
             .addOnSuccessListener { onResult(true, null) }
             .addOnFailureListener { e -> onResult(false, e.message) }
     }
-
+    fun deletePost(postId: String, onResult: (Boolean, String?) -> Unit) {
+        firestore.collection("posts").document(postId).delete()
+            .addOnSuccessListener {
+                onResult(true, null)
+            }
+            .addOnFailureListener { exception ->
+                onResult(false, exception.message)
+            }
+    }
 }
