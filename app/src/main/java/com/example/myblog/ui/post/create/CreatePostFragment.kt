@@ -63,6 +63,7 @@ class CreatePostFragment : BaseFragment() {
 
             // הצגת ה-loader בזמן העלאת הפוסט
             showLoader(binding.loader, "Uploading post...")
+            Log.d("CreatePostFragment", " imageUri: $selectedImageUri, description: $description")
 
             lifecycleScope.launch {
                 createPostViewModel.uploadPost(selectedImageUri!!, description, requireContext()) { success, message ->
