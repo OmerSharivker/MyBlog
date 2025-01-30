@@ -129,6 +129,25 @@ class FirebaseService {
                 }
             }
     }
+    fun listenToAllPosts(onResult: (List<Post>) -> Unit) {
+        firestore.collection("posts")
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.e("FirebaseService", "Error listening to all posts: ${error.message}")
+                    onResult(emptyList())
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && !snapshot.isEmpty) {
+                    val posts = snapshot.toObjects(Post::class.java)
+                    Log.d("FirebaseService", "Received ${posts.size} posts in real-time")
+                    onResult(posts)
+                } else {
+                    Log.d("FirebaseService", "No posts found in real-time")
+                    onResult(emptyList())
+                }
+            }
+    }
     fun updatePost(postId: String, imageUrl: String, description: String, onResult: (Boolean, String?) -> Unit) {
         val postUpdates = mapOf(
             "postImageUrl" to imageUrl,
@@ -146,5 +165,13 @@ class FirebaseService {
             .addOnSuccessListener { onResult(true, null) }
             .addOnFailureListener { e -> onResult(false, e.message) }
     }
-
+    fun deletePost(postId: String, onResult: (Boolean, String?) -> Unit) {
+        firestore.collection("posts").document(postId).delete()
+            .addOnSuccessListener {
+                onResult(true, null)
+            }
+            .addOnFailureListener { exception ->
+                onResult(false, exception.message)
+            }
+    }
 }

@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.services)
     id("kotlin-parcelize")
+    id ("kotlin-kapt")
+
 }
 
 android {
@@ -28,7 +30,9 @@ android {
         buildConfigField("String", "CLOUD_NAME", "\"${project.properties["CLOUD_NAME"] ?:""}\"")
         buildConfigField("String", "API_KEY", "\"${project.properties["API_KEY"] ?:""}\"")
         buildConfigField("String", "API_SECRET", "\"${project.properties["API_SECRET"] ?:""}\"")
-        buildConfigField("String", "GEMINI_API_KEY", "\"${project.properties["GOOGLE_API_KEY"] ?:""}\"")
+        buildConfigField("String", "DEEPSEEK_API_KEY", "\"${project.properties["DEEPSEEK_API_KEY"] ?:""}\"")
+
+
     }
 
     buildTypes {
@@ -74,9 +78,12 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.firebase.auth.ktx)
+    implementation(libs.androidx.room.ktx)
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
-
+    implementation (libs.androidx.room.runtime)
+    implementation(libs.androidx.room.common)
+    kapt(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -1,8 +1,10 @@
 package com.example.myblog.ui.post.create
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -26,10 +28,26 @@ class CreatePostFragment : BaseFragment() {
     private val createPostViewModel: CreatePostViewModel by viewModels()
     private var selectedImageUri: Uri? = null
 
+    // Launcher לבחירת תמונה מהגלריה
     private val imagePickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let {
             selectedImageUri = it
             Glide.with(this).load(it).into(binding.imagePreview)
+        }
+    }
+
+    // Launcher לצילום תמונה במצלמה
+    private val cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap: Bitmap? ->
+        bitmap?.let {
+            // שמירת התמונה בגלריה וקבלת ה-URI
+            val uri = MediaStore.Images.Media.insertImage(
+                requireContext().contentResolver,
+                it,
+                "CapturedImage",
+                "Image captured by camera"
+            )
+            selectedImageUri = Uri.parse(uri)
+            Glide.with(this).load(selectedImageUri).into(binding.imagePreview)
         }
     }
 
@@ -54,12 +72,13 @@ class CreatePostFragment : BaseFragment() {
             binding.descriptionEditText.setText(post.description)
             selectedImageUri = null // כדי לבדוק אם שונו הנתונים
         } else {
-            binding.toolbar.title  = "Create Post"
+            binding.toolbar.title = "Create Post"
             binding.uploadPostButton.text = "Upload Post"
         }
 
+        // בחירת תמונה או מצלמה
         binding.selectImageButton.setOnClickListener {
-            imagePickerLauncher.launch("image/*")
+            showImageSourceDialog()
         }
 
         binding.aiGenerateButton.setOnClickListener {
@@ -71,6 +90,20 @@ class CreatePostFragment : BaseFragment() {
         binding.uploadPostButton.setOnClickListener {
             handleUploadOrUpdate(post)
         }
+    }
+
+    // מציג דיאלוג לבחירה בין מצלמה לגלריה
+    private fun showImageSourceDialog() {
+        val options = arrayOf("Choose from Gallery", "Take a Photo")
+        android.app.AlertDialog.Builder(requireContext())
+            .setTitle("Select Image Source")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> imagePickerLauncher.launch("image/*") // גלריה
+                    1 -> cameraLauncher.launch(null) // מצלמה
+                }
+            }
+            .show()
     }
 
     private fun handleUploadOrUpdate(post: Post?) {
