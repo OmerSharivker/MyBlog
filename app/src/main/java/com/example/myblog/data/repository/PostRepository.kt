@@ -58,7 +58,7 @@ class PostRepository(
 
     suspend fun generatePostDescription(): String {
         return try {
-            ChuckNorrisService.fetchRandomJoke()
+            ChuckNorrisService.fetchRandomJoke() ?: "Failed to fetch joke"
         } catch (e: Exception) {
             e.printStackTrace()
             "Error fetching joke: ${e.message}"
@@ -132,5 +132,7 @@ class PostRepository(
             }
         }
     }
-
+    fun listenToAllPosts(onResult: (List<Post>) -> Unit) {
+        firebaseService.listenToAllPosts(onResult)
+    }
 }

@@ -6,25 +6,53 @@ import android.net.Uri
 import android.util.Log
 import com.example.myblog.data.api.CloudinaryService
 import com.example.myblog.data.api.FirebaseService
+import com.example.myblog.data.local.AppDatabase
 import com.example.myblog.data.model.Post
 import com.example.myblog.data.model.User
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
 
 
 class ProfileRepository(
     private val firebaseService: FirebaseService = FirebaseService(),
-    private val cloudinaryService: CloudinaryService = CloudinaryService()
+    private val cloudinaryService: CloudinaryService = CloudinaryService(),
+    context: Context
 ) {
+    private val userDao = AppDatabase.getDatabase(context).userDao()
 
     fun getCurrentUser(onResult: (User?) -> Unit) {
         val currentUserId = firebaseService.getCurrentUserId()
         if (currentUserId != null) {
             firebaseService.getUserById(currentUserId) { user ->
-                onResult(user)
+                if (user != null) {
+                    onResult(user)
+
+                    saveUserLocally(user)
+                } else {
+                    getUserFromLocalDB(currentUserId, onResult)
+                }
             }
         } else {
             onResult(null)
+        }
+    }
+
+    private fun saveUserLocally(user: User) {
+        Log.d("ProfileRepository", "Saving user to Room: $user")
+        kotlinx.coroutines.GlobalScope.launch(Dispatchers.IO) {
+            userDao.insert(user)
+        }
+    }
+    private fun getUserFromLocalDB(userId: String, onResult: (User?) -> Unit) {
+        kotlinx.coroutines.GlobalScope.launch(Dispatchers.IO) {
+            val user = userDao.getUser(userId).firstOrNull() // משיגים את הערך הראשון מה-Flow
+            kotlinx.coroutines.GlobalScope.launch(Dispatchers.Main) {
+                onResult(user)
+                Log.d("ProfileRepository", "Fetched user from Room: $user")
+            }
         }
     }
 
@@ -49,6 +77,7 @@ class ProfileRepository(
                                         Log.d("ProfileRepository", "Image uploaded successfully: $imageUrl")
 
                                         // עדכון פרטי המשתמש עם ה-URL החדש
+                                        saveUserLocally(user.copy(name = newName, profileImageUrl = imageUrl))
                                         val updatedUser = user.copy(name = newName, profileImageUrl = imageUrl)
                                         firebaseService.saveUserToFirestore(updatedUser) { saveSuccess, saveError ->
                                             if (saveSuccess) {
@@ -105,6 +134,8 @@ class ProfileRepository(
             }
         }
     }
+
+
     fun updateUserPosts(userId: String, newName: String?, newProfileImageUrl: String?, onResult: (Boolean, String?) -> Unit) {
         firebaseService.getPosts { posts ->
             val userPosts = posts.filter { it.userId == userId }

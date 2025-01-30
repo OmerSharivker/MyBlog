@@ -22,8 +22,8 @@
             <!-- לוגו של בלוג -->
             <ImageView
                 android:id="@+id/logoImageView"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="180dp"
+                android:layout_height="180dp"
                 android:src="@drawable/ic_blog_icon"
                 android:contentDescription="Blog Icon"
                 android:layout_marginBottom="24dp" />

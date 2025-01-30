@@ -233,9 +233,9 @@ class ProfileFragment : BaseFragment() {
                     if (success) {
                         Toast.makeText(requireContext(), "Profile updated successfully", Toast.LENGTH_SHORT).show()
 
-
+                        // עדכון הפוסטים של המשתמש עם השם והתמונה החדשים
                         val userId = profileViewModel.user.value?.id ?: return@updateProfile
-                        val newProfileImageUrl = profileViewModel.user.value?.profileImageUrl
+                        val newProfileImageUrl = selectedImageUri?.toString() // URL של התמונה החדשה
                         profileViewModel.updateUserPosts(userId, newName, newProfileImageUrl) { postUpdateSuccess, postUpdateMessage ->
                             if (postUpdateSuccess) {
                                 Log.d("ProfileFragment", "Posts updated successfully")

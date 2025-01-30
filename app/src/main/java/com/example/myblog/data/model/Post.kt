@@ -1,7 +1,9 @@
+// בתוך Post.kt
 package com.example.myblog.data.model
 
 import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+
+import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Post(
@@ -14,3 +16,4 @@ data class Post(
     val likes: List<String> = emptyList(),
     val comments: Int = 0
 ) : Parcelable
+

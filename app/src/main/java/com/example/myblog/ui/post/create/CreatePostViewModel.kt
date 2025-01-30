@@ -7,7 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.myblog.data.repository.PostRepository
 import kotlinx.coroutines.launch
 
-class CreatePostViewModel : ViewModel() {
+class CreatePostViewModel  : ViewModel() {
+
 
     private val repository = PostRepository()
 

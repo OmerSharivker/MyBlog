@@ -17,7 +17,15 @@ class HomeViewModel : ViewModel() {
 
     private val _posts = MutableLiveData<List<Post>>()
     val posts: LiveData<List<Post>> get() = _posts
+    init {
+        listenToPostsRealtime()
+    }
 
+    private fun listenToPostsRealtime() {
+        postRepository.listenToAllPosts { updatedPosts ->
+            _posts.postValue(updatedPosts)
+        }
+    }
     fun loadPosts() {
         viewModelScope.launch {
             postRepository.fetchPosts { postList ->

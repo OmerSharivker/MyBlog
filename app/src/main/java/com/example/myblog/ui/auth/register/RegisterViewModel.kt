@@ -1,13 +1,16 @@
 package com.example.myblog.ui.auth.register
 
+import android.app.Application
+import android.content.Context
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myblog.data.repository.AuthRepository
 import kotlinx.coroutines.launch
 
-class RegisterViewModel : ViewModel() {
+class RegisterViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository = AuthRepository()
+    private val repository = AuthRepository(application.applicationContext)
 
     fun registerUser(
         name: String,

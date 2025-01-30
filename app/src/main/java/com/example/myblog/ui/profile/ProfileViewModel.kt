@@ -1,13 +1,16 @@
 package com.example.myblog.ui.profile
 
+import android.app.Application
 import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myblog.data.api.FirebaseService
 import com.example.myblog.data.model.Post
 import com.example.myblog.data.model.User
 import com.example.myblog.data.repository.PostRepository
@@ -15,7 +18,14 @@ import com.example.myblog.data.repository.ProfileRepository
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
-class ProfileViewModel(private val profileRepository: ProfileRepository = ProfileRepository()) : ViewModel() {
+class ProfileViewModel(application: Application
+
+) : AndroidViewModel(application) {
+
+    private val profileRepository = ProfileRepository(
+        firebaseService = FirebaseService(), // Explicitly pass FirebaseService
+        context = application // Pass application as the context
+    )
 
     private val _user = MutableLiveData<User?>()
     val user: LiveData<User?> get() = _user
